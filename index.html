@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SQL Injection Demo - Lý Thuyết & Thực Hành</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="assets/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -147,7 +147,7 @@ $stmt->execute();</code></pre>
                         <h3>⚠️ CẢNH BÁO: Không Bảo Mật</h3>
                         <p>Form này sử dụng nối chuỗi trực tiếp - dễ bị SQL Injection</p>
                         
-                        <form action="vulnerable_login.php" method="POST" class="login-form">
+                        <form action="pages/vulnerable_login.php" method="POST" class="login-form">
                             <div class="form-group">
                                 <label><i class="fas fa-user"></i> Tên đăng nhập</label>
                                 <input type="text" name="username" placeholder="Nhập username" required>
@@ -242,7 +242,7 @@ SELECT username, password FROM users</code></pre>
                         <h3>🛒 Tìm Kiếm Sản Phẩm</h3>
                         <p>Nhập ID sản phẩm để tìm kiếm:</p>
                         
-                        <form action="union_attack.php" method="GET" class="login-form">
+                        <form action="pages/union_attack.php" method="GET" class="login-form">
                             <div class="form-group">
                                 <label><i class="fas fa-search"></i> Product ID</label>
                                 <input type="text" name="id" placeholder="Nhập ID (1-5)" value="1">
@@ -315,7 +315,7 @@ SELECT username, password FROM users</code></pre>
                                 <i class="fas fa-graduation-cap"></i> Hướng dẫn chi tiết
                             </h4>
                             <p>Muốn biết cách thêm payload vào URL?</p>
-                            <a href="union_guide.php" class="btn btn-success" style="margin-top: 10px; display: inline-flex;">
+                            <a href="pages/union_guide.php" class="btn btn-success" style="margin-top: 10px; display: inline-flex;">
                                 <i class="fas fa-book-open"></i> Xem hướng dẫn từng bước
                             </a>
                         </div>
@@ -378,7 +378,7 @@ DROP TABLE users;
                         <h3>🔍 Tìm Kiếm Sản Phẩm Theo Tên</h3>
                         <p>Nhập tên sản phẩm để tìm kiếm:</p>
                         
-                        <form action="stacked_queries.php" method="GET" class="login-form">
+                        <form action="pages/stacked_queries.php" method="GET" class="login-form">
                             <div class="form-group">
                                 <label><i class="fas fa-search"></i> Tên sản phẩm</label>
                                 <input type="text" name="search" placeholder="Nhập tên sản phẩm">
@@ -491,7 +491,7 @@ DROP TABLE users;
                         <h3>✅ BẢO MẬT: Sử Dụng Prepared Statements</h3>
                         <p>Form này an toàn trước SQL Injection</p>
                         
-                        <form action="secure_login.php" method="POST" class="login-form">
+                        <form action="pages/secure_login.php" method="POST" class="login-form">
                             <div class="form-group">
                                 <label><i class="fas fa-user"></i> Tên đăng nhập</label>
                                 <input type="text" name="username" placeholder="Nhập username" required>

@@ -3,7 +3,7 @@
 // ✅ Sử dụng Prepared Statements để phòng chống SQL Injection
 
 session_start();
-require_once 'config.php';
+require_once '../includes/config.php';
 
 $error = '';
 $success = '';

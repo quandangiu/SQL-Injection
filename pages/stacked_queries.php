@@ -2,7 +2,7 @@
 // stacked_queries.php - DEMO STACKED QUERIES / DESTRUCTIVE ATTACK
 // ⚠️ Mô phỏng tấn công phá hoại với nhiều câu lệnh SQL
 
-require_once 'config.php';
+require_once '../includes/config.php';
 
 $error = '';
 $warning = '';

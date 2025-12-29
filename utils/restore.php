@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restore Database - Khôi Phục Dữ Liệu</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../assets/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -21,7 +21,7 @@
             <h2><i class="fas fa-database"></i> Restore Dữ Liệu Sau Khi Bị Tấn Công</h2>
 
             <?php
-            require_once 'config.php';
+            require_once '../includes/config.php';
             
             $message = '';
             $error = '';

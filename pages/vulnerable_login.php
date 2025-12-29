@@ -3,7 +3,7 @@
 // ⚠️ CẢNH BÁO: Đây là ví dụ về code KHÔNG AN TOÀN - chỉ dùng để học tập!
 
 session_start();
-require_once 'config.php';
+require_once '../includes/config.php';
 
 $error = '';
 $success = '';

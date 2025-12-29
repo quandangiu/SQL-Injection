@@ -1,0 +1,31 @@
+<?php
+/**
+ * CONFIG.PHP.EXAMPLE - Database Configuration Template
+ * Sao chép file này thành config.php và cập nhật thông tin database
+ */
+
+// Database credentials
+define('DB_HOST', 'localhost');
+define('DB_USER', 'root');           // Thay đổi thành username database của bạn
+define('DB_PASS', '');               // Thay đổi thành password database của bạn
+define('DB_NAME', 'sqli_demo');
+
+// Create connection
+$conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+
+// Check connection
+if ($conn->connect_error) {
+    die("❌ Kết nối database thất bại: " . $conn->connect_error . 
+        "<br><br><strong>Hướng dẫn:</strong><br>" .
+        "1. Đảm bảo MySQL đang chạy<br>" .
+        "2. Import file database.sql vào MySQL<br>" .
+        "3. Kiểm tra lại thông tin kết nối trong config.php");
+}
+
+// Set charset
+$conn->set_charset("utf8mb4");
+
+// Bật error reporting cho môi trường development
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+?>

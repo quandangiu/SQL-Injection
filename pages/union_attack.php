@@ -2,7 +2,7 @@
 // union_attack.php - DEMO UNION-BASED SQL INJECTION
 // ⚠️ Form tìm kiếm sản phẩm dễ bị Union Attack
 
-require_once 'config.php';
+require_once '../includes/config.php';
 
 $error = '';
 $sql_query = '';
