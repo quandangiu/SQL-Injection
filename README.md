@@ -1,6 +1,6 @@
 # SQL-Injection
 
-# 🛡️ SQL Injection Demo - Installation Guide
+# 🛡️ SQL Injection- Installation Guide
 
 ## 📋 Introduction
 Complete SQL Injection demo with:
