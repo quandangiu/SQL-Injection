@@ -1,41 +1,69 @@
-# 🛡️ SQL Injection Demo - Hướng Dẫn Cài Đặt
+# SQL-Injection
 
-## 📋 Giới thiệu
-Demo hoàn chỉnh về SQL Injection với:
-- ✅ Lý thuyết chi tiết về SQLi và rủi ro
-- 🐛 Form đăng nhập DỄ BỊ TẤN CÔNG (để học)
-- 🔒 Form đăng nhập AN TOÀN (Prepared Statements)
-- 🎨 Giao diện cực đẹp, hiện đại
+# 🛡️ SQL Injection Demo - Installation Guide
 
-## 🚀 Cài đặt
+## 📋 Introduction
+Complete SQL Injection demo with:
+- ✅ Detailed theory about SQLi and risks
+- 🐛 Vulnerable Login Form (for learning)
+- 🔒 Secure Login Form (Prepared Statements)
+- 🎨 Beautiful, modern UI
 
-### Bước 1: Import Database
-1. Mở phpMyAdmin: `http://localhost/phpmyadmin`
-2. Tạo database mới tên `sqli_demo` (hoặc import sẽ tự tạo)
-3. Import file `database.sql`
+## 📁 Directory Structure
 
-### Bước 2: Setup Password Hash
-**QUAN TRỌNG**: Sau khi import database, truy cập:
 ```
-http://localhost/sqli_demo/setup_password.php
+sqli_demo/
+├── assets/              # CSS and static resources
+│   └── style.css
+├── database/            # SQL database file
+│   └── database.sql
+├── includes/            # Configuration and includes
+│   ├── config.php
+│   └── config.php.example
+├── pages/               # Demo pages
+│   ├── vulnerable_login.php    # Vulnerable demo
+│   ├── secure_login.php        # Secure demo
+│   ├── union_attack.php        # Union-based SQLi
+│   ├── union_guide.php         # Union Attack Guide
+│   └── stacked_queries.php     # Stacked Queries Attack
+├── utils/               # Utilities
+│   ├── generate_hash.php       # Generate password hash
+│   ├── setup_password.php      # Setup password
+│   └── restore.php             # Restore database
+├── index.html          # Home page
+└── README.md          # This file
 ```
-File này sẽ tự động tạo password hash đúng và cập nhật vào database.
 
-### Bước 3: Cấu hình Database (nếu cần)
-Mở file `config.php` và điều chỉnh nếu cần:
+## 🚀 Installation
+
+### Step 1: Configure Database
+1. Copy `includes/config.php.example` to `includes/config.php`
+2. Open `includes/config.php` and adjust database info:
 ```php
 define('DB_HOST', 'localhost');
-define('DB_USER', 'root');        // Username MySQL của bạn
-define('DB_PASS', '');            // Password MySQL của bạn
+define('DB_USER', 'root');        # Your MySQL username
+define('DB_PASS', '');            # Your MySQL password
 define('DB_NAME', 'sqli_demo');
 ```
 
-### Bước 4: Truy cập Demo
-Mở trình duyệt và vào: `http://localhost/sqli_demo/`
+### Step 2: Import Database
+1. Open phpMyAdmin: `http://localhost/phpmyadmin`
+2. Create new database named `sqli_demo`
+3. Import file `database/database.sql`
 
-## 🎯 Tài khoản test
+### Step 3: Setup Password Hash
+**IMPORTANT**: After importing database, access:
+```
+http://localhost/sqli_demo/utils/setup_password.php
+```
+This will automatically create password hash and update the database.
 
-Tất cả tài khoản đều có password: **123456**
+### Step 4: Access Demo
+Open browser and go to: `http://localhost/sqli_demo/`
+
+## 🎯 Test Accounts
+
+All accounts have password: **123456**
 
 | Username | Role | Email |
 |----------|------|-------|
@@ -44,55 +72,42 @@ Tất cả tài khoản đều có password: **123456**
 | mary_smith | user | mary@company.com |
 | bob_wilson | user | bob@company.com |
 
-## 💣 Hướng dẫn tấn công (chỉ dùng để học!)
+## 💣 Attack Instructions (For Learning Only!)
 
-### Trên form VULNERABLE (Không an toàn):
+### On VULNERABLE Form (Unsafe):
 
-#### 1. Bypass Login (Bỏ qua mật khẩu)
+#### 1. Bypass Login (Bypass password)
 ```
 Username: admin' OR '1'='1' --
-Password: (để trống hoặc bất kỳ)
+Password: (leave empty or any value)
 ```
-**Kết quả**: Đăng nhập thành công mà không cần biết password!
+**Result**: Successful login without knowing the password!
 
-#### 2. Đăng nhập với user cụ thể
+#### 2. Login to specific user
 ```
 Username: john_doe' --
-Password: (bất kỳ)
+Password: (any value)
 ```
-**Kết quả**: Đăng nhập vào tài khoản john_doe
+**Result**: Login to john_doe account
 
-#### 3. Lấy tất cả user
+#### 3. Get all users
 ```
 Username: ' OR 1=1 --
-Password: (bất kỳ)
+Password: (any value)
 ```
-**Kết quả**: Hiển thị thông tin TẤT CẢ người dùng
+**Result**: Display information of ALL users
 
-#### 4. Union Attack (Lấy dữ liệu từ bảng khác)
+#### 4. Union Attack (Get data from other tables)
 ```
 Username: admin' UNION SELECT 1,document_name,content,4,5,6,7 FROM sensitive_data --
-Password: (bất kỳ)
+Password: (any value)
 ```
-**Kết quả**: Lấy được dữ liệu nhạy cảm từ bảng khác!
+**Result**: Get sensitive data from other tables!
 
-### Trên form SECURE (An toàn):
-Thử TẤT CẢ các payload trên → **ĐỀU THẤT BẠI!** 🛡️
+### On SECURE Form (Safe):
+Try ALL the above payloads → **ALL FAIL!** 🛡️
 
-## 📚 Cấu trúc thư mục
-
-```
-sqli_demo/
-├── index.html              # Trang chủ với lý thuyết SQLi
-├── vulnerable_login.php    # Form dễ bị tấn công
-├── secure_login.php        # Form an toàn với Prepared Statements
-├── config.php              # Cấu hình database
-├── style.css               # Giao diện đẹp
-├── database.sql            # File SQL để import
-└── README.md               # File này
-```
-
-## 🔐 Biện pháp bảo mật trong Secure Login
+## 🔐 Security Measures in Secure Login
 
 ### 1. Prepared Statements
 ```php
@@ -100,54 +115,54 @@ $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
 $stmt->bind_param("s", $username);
 $stmt->execute();
 ```
-✅ Tham số được tách biệt khỏi câu lệnh SQL
+✅ Parameters are separated from SQL statement
 
 ### 2. Input Validation
 ```php
 if (strlen($username) < 3 || strlen($username) > 50) {
-    die("Username không hợp lệ");
+    die("Invalid username");
 }
 if (!preg_match('/^[a-zA-Z0-9_]+$/', $username)) {
-    die("Username chỉ được chứa chữ, số và _");
+    die("Username can only contain letters, numbers and _");
 }
 ```
-✅ Kiểm tra định dạng và độ dài
+✅ Check format and length
 
 ### 3. Password Hashing
 ```php
 password_verify($password, $hashed_password)
 ```
-✅ Mật khẩu được mã hóa bằng bcrypt
+✅ Password encrypted with bcrypt
 
 ### 4. Error Handling
 ```php
 catch (Exception $e) {
-    $error = "Có lỗi xảy ra";
-    error_log($e->getMessage()); // Log vào file
+    $error = "An error occurred";
+    error_log($e->getMessage()); # Log to file
 }
 ```
-✅ Không hiển thị lỗi SQL chi tiết cho user
+✅ No detailed SQL errors shown to user
 
-## ⚠️ CẢNH BÁO QUAN TRỌNG
+## ⚠️ IMPORTANT WARNING
 
-1. **CHỈ dùng để học tập**: Demo này chứa code có lỗ hổng bảo mật
-2. **KHÔNG triển khai lên server thật**: Chỉ chạy trên localhost
-3. **Hành vi bất hợp pháp**: Tấn công hệ thống thực là vi phạm pháp luật
+1. **FOR LEARNING ONLY**: This demo contains security vulnerabilities
+2. **DO NOT deploy to production**: Only run on localhost
+3. **ILLEGAL ACTIVITY**: Attacking real systems is against the law
 
-## 📖 Tài liệu tham khảo
+## 📖 Reference Documentation
 
 - [OWASP SQL Injection](https://owasp.org/www-community/attacks/SQL_Injection)
 - [PHP Prepared Statements](https://www.php.net/manual/en/mysqli.quickstart.prepared-statements.php)
 - [Password Hashing Best Practices](https://www.php.net/manual/en/function.password-hash.php)
 
-## 🎓 Bài học quan trọng
+## 🎓 Important Lessons
 
-### ❌ KHÔNG BAO GIỜ làm:
+### ❌ NEVER do:
 ```php
 $sql = "SELECT * FROM users WHERE username = '$username'";
 ```
 
-### ✅ LUÔN LUÔN làm:
+### ✅ ALWAYS do:
 ```php
 $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
 $stmt->bind_param("s", $username);
@@ -155,20 +170,20 @@ $stmt->bind_param("s", $username);
 
 ## 💡 Tips
 
-- Sử dụng tab Network trong Developer Tools để xem request/response
-- Quan sát câu lệnh SQL được tạo ra ở phần debug
-- So sánh sự khác biệt giữa 2 form để hiểu rõ hơn
+- Use Network tab in Developer Tools to see request/response
+- Observe SQL statements generated in the debug section
+- Compare the difference between both forms to understand better
 
-## 🤝 Đóng góp
+## 🤝 Contributing
 
-Nếu có ý tưởng cải thiện demo, hãy tạo pull request!
+If you have ideas to improve this demo, please create a pull request!
 
 ## 📝 License
 
-MIT License - Tự do sử dụng cho mục đích giáo dục
+MIT License - Free to use for educational purposes
 
 ---
 
-**Chúc bạn học tốt! 🚀**
+**Happy learning! 🚀**
 
 *Remember: With great power comes great responsibility!*
